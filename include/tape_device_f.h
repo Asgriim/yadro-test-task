@@ -29,6 +29,7 @@ public:
     bool atEnd() noexcept override;
     bool atStart() noexcept override;
 private:
+    void goToCurrPos();
     //milliseconds
     uint32_t m_readLatency;
     uint32_t m_writeLatency;
