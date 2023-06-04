@@ -1,0 +1,10 @@
+//
+// Created by asgrim on 04.06.23.
+//
+
+#ifndef YADRO_TEST_TASK_CONFIG_READER_H
+#define YADRO_TEST_TASK_CONFIG_READER_H
+
+
+
+#endif //YADRO_TEST_TASK_CONFIG_READER_H

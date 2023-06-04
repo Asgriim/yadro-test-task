@@ -8,7 +8,7 @@ class ITapeDevice
 {
 public:
     ITapeDevice() = default;
-    virtual ~ITapeDevice(){};
+    virtual ~ITapeDevice()= default;
 
     virtual bool rewindLeft(int64_t offset) noexcept = 0 ;
     virtual bool rewindRight(int64_t offset) noexcept = 0;
@@ -22,5 +22,9 @@ public:
     virtual void setRealLatency(bool realLatency) noexcept = 0;
     virtual bool atEnd() noexcept = 0;
     virtual bool atStart() noexcept = 0;
+    virtual uint32_t getReadLatency() noexcept = 0;
+    virtual uint32_t getWriteLatency() noexcept = 0;
+    virtual uint32_t getRewindLatency() noexcept = 0;
+
 };
 #endif //YADRO_TEST_TASK_I_TAPE_DEVICE_H

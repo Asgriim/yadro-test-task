@@ -16,7 +16,7 @@ TapeDeviceF::TapeDeviceF(const std::string &path,
 
   {
     m_tape = std::fopen(path.data(),"r+b");
-    if(m_tape == NULL)
+    if(m_tape == nullptr)
     {
         fclose(fopen(path.data(),"w"));
         m_tape = std::fopen(path.data(),"r+b");
@@ -25,14 +25,55 @@ TapeDeviceF::TapeDeviceF(const std::string &path,
 
   }
 
+TapeDeviceF::TapeDeviceF(TapeDeviceF &&tapeDeviceF) noexcept
+{
+m_tape = tapeDeviceF.m_tape;
+tapeDeviceF.m_tape = nullptr;
+m_readLatency = tapeDeviceF.m_readLatency;
+m_writeLatency = tapeDeviceF.m_writeLatency;
+m_curPos = tapeDeviceF.m_curPos;
+m_length = tapeDeviceF.m_length;
+m_rewindLatency = tapeDeviceF.m_rewindLatency;
+m_realLatency = tapeDeviceF.m_realLatency;
+}
+
+
+TapeDeviceF& TapeDeviceF::operator=(TapeDeviceF &&tapeDeviceF) noexcept
+{
+    if(this == &tapeDeviceF)
+    {
+        return *this;
+    }
+
+    if (m_tape != nullptr)
+    {
+        std::fclose(m_tape);
+    }
+    m_tape = tapeDeviceF.m_tape;
+    tapeDeviceF.m_tape = nullptr;
+    m_readLatency = tapeDeviceF.m_readLatency;
+    m_writeLatency = tapeDeviceF.m_writeLatency;
+    m_curPos = tapeDeviceF.m_curPos;
+    m_length = tapeDeviceF.m_length;
+    m_rewindLatency = tapeDeviceF.m_rewindLatency;
+    m_realLatency = tapeDeviceF.m_realLatency;
+    return *this;
+}
+
+
 TapeDeviceF::~TapeDeviceF()
 {
-    std::fclose(m_tape);
+    if(m_tape != nullptr)
+    {
+        std::fclose(m_tape);
+    }
+
 }
+
 //todo обавить слип потока на задержках
 bool TapeDeviceF::rewindLeft(int64_t offset) noexcept
 {
-    if (m_curPos == 0)
+    if (m_curPos == 0 || m_tape == nullptr)
     {
         return false;
     }
@@ -52,7 +93,7 @@ bool TapeDeviceF::rewindLeft(int64_t offset) noexcept
 
 bool TapeDeviceF::goNext() noexcept
 {
-    if (m_curPos == m_length)
+    if (m_curPos == m_length || m_tape == nullptr)
     {
         return false;
     }
@@ -71,6 +112,10 @@ bool TapeDeviceF::goNext() noexcept
 
 bool TapeDeviceF::rewindRight(int64_t offset) noexcept
 {
+    if (m_tape == nullptr)
+    {
+        return false;
+    }
     int64_t tmpOff = offset * elementSize;
     if (!std::fseek(m_tape, tmpOff, SEEK_CUR))
     {
@@ -87,6 +132,10 @@ bool TapeDeviceF::rewindRight(int64_t offset) noexcept
 
 void TapeDeviceF::rewindToStart() noexcept
 {
+    if (m_tape == nullptr)
+    {
+        return;
+    }
     std::rewind(m_tape);
     if(m_realLatency)
     {
@@ -97,6 +146,10 @@ void TapeDeviceF::rewindToStart() noexcept
 
 void TapeDeviceF::rewindToEnd() noexcept
 {
+    if (m_tape == nullptr)
+    {
+        return;
+    }
     fseek(m_tape,0,SEEK_END);
     m_curPos = ftell(m_tape);
     if (m_realLatency)
@@ -107,7 +160,7 @@ void TapeDeviceF::rewindToEnd() noexcept
 
 bool TapeDeviceF::goPrev() noexcept
 {
-    if (m_curPos == 0)
+    if (m_curPos == 0 || m_tape == nullptr)
     {
         return false;
     }
@@ -126,7 +179,7 @@ bool TapeDeviceF::goPrev() noexcept
 
 bool TapeDeviceF::write(int32_t elem) noexcept
 {
-    if (m_curPos == m_length)
+    if (m_curPos == m_length || m_tape == nullptr)
     {
         return false;
     }
@@ -145,7 +198,7 @@ bool TapeDeviceF::write(int32_t elem) noexcept
 
 bool TapeDeviceF::read(int32_t &elem) noexcept
 {
-    if (m_curPos == m_length)
+    if (m_curPos == m_length || m_tape == nullptr)
     {
         return false;
     }
@@ -181,7 +234,27 @@ bool TapeDeviceF::atStart() noexcept
     return m_curPos == 0;
 }
 
+//restore file ptr if error occurred
 void TapeDeviceF::goToCurrPos()
 {
+    if (m_tape == nullptr)
+    {
+        return;
+    }
     fseek(m_tape,m_curPos,SEEK_SET);
+}
+
+uint32_t TapeDeviceF::getReadLatency() noexcept
+{
+    return m_readLatency;
+}
+
+uint32_t TapeDeviceF::getRewindLatency() noexcept
+{
+    return m_rewindLatency;
+}
+
+uint32_t TapeDeviceF::getWriteLatency() noexcept
+{
+    return m_writeLatency;
 }

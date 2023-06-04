@@ -5,7 +5,7 @@
 #include <iostream>
 #include "util.h"
 
-bool convertBinaryFile(const std::string &txtFilePath, const std::string &binFilePath)
+bool convertBinaryToTxt(const std::string &txtFilePath, const std::string &binFilePath)
 {
     std::FILE *binaryFile;
     std::ofstream textStream;
@@ -13,7 +13,7 @@ bool convertBinaryFile(const std::string &txtFilePath, const std::string &binFil
     binaryFile = std::fopen(binFilePath.data(), "rb");
     textStream.open(txtFilePath);
 
-    if(binaryFile == NULL || textStream.bad())
+    if(binaryFile == nullptr || textStream.bad())
     {
         fclose(binaryFile);
         textStream.close();
@@ -35,7 +35,7 @@ bool convertBinaryFile(const std::string &txtFilePath, const std::string &binFil
     return true;
 }
 
-bool convertTextFile(const std::string &txtFile, const std::string &binFile)
+int64_t convertTextToBinary(const std::string &txtFile, const std::string &binFile)
 {
     std::ofstream binaryStream;
     std::ifstream textStream;
@@ -46,17 +46,19 @@ bool convertTextFile(const std::string &txtFile, const std::string &binFile)
     {
         binaryStream.close();
         textStream.close();
-        return false;
+        return 0;
     }
 
     int32_t tmp;
+    int64_t sz = 0;
     while (textStream >> tmp)
     {
+        sz += sizeof(tmp);
         binaryStream.write((char*)&tmp, sizeof(tmp));
     }
     binaryStream.close();
     textStream.close();
-    return true;
+    return sz;
 }
 
 bool createEmptyBinaryFile(const std::string &binFilePath, const int64_t elementByteSize, const int64_t count)
@@ -64,7 +66,7 @@ bool createEmptyBinaryFile(const std::string &binFilePath, const int64_t element
     std::FILE *binaryFile;
     binaryFile = std::fopen(binFilePath.data(), "wb");
 
-    if (binaryFile == NULL)
+    if (binaryFile == nullptr)
     {
         return false;
     }

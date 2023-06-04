@@ -5,26 +5,37 @@
 #include <cstdint>
 #include "tape_device_f.h"
 #include "util.h"
+#include "tape_sorter.h"
+#include "vector"
+#include <algorithm>
+#include <queue>
+#include <filesystem>
+constexpr char* confFile = "./config";
+
 int main()
 {
 
-    std::string path = "../tmp";
-    std::string  txtPath = "../aboba";
-//    convertTextFile(txtPath,path);
-//    return 0;
-    TapeDeviceF deviceF(path,123,132,456,32);
-    int32_t a = 0;
-    while (deviceF.read(a))
+    if (!std::filesystem::exists(confFile))
     {
-        std::cout << a << "\n";
-        deviceF.goNext();
+        std::cout << "config file not found";
+        return -1;
     }
-//    deviceF.goPrev();
-//    deviceF.write(227);
-//    deviceF.read(a);
-//    deviceF.rewindToEnd();
-//    deviceF.goPrev();
-//    deviceF.read(a);
-//    std::cout << a << "\n";
+
+    std::string path = "../tmp";
+    std::string path2 = "../out2t";
+    std::string txtPath = "../aboba";
+    std::string bebra = "../normalSorted";
+    std::string test = "../test";
+    std::string tmpTestTape = "/tmp/tempTape43";
+    convertTextToBinary(txtPath,path);
+    TapeSorter sorter;
+    TapeDeviceF deviceF(path,456,456,456, 216);
+    TapeDeviceF deviceF2(path2,456,456,456, 216);
+    sorter.setByteMemoryLimit(8);
+    sorter.setTempTapeLimit(1000);
+    sorter.setRealLAtency(true);
+    sorter.sortTapes(deviceF,deviceF2);
+    convertBinaryToTxt(test, path2);
+//    convertBinaryToTxt(test,tmpTestTape);
     return 0;
 }

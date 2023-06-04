@@ -9,12 +9,22 @@
 class  __attribute__((packed)) TapeDeviceF : public ITapeDevice
 {
 public:
+    TapeDeviceF() = delete;
     TapeDeviceF(const std::string &path,
                    uint32_t readLatency,
                    uint32_t writeLatency,
                    uint32_t rewindLatency,
                    uint64_t length) noexcept;
+
+    TapeDeviceF(const TapeDeviceF &tapeDeviceF) = delete;
+
+    TapeDeviceF(TapeDeviceF &&tapeDeviceF) noexcept;
+
     ~TapeDeviceF() override;
+
+    TapeDeviceF& operator=(const TapeDeviceF &tapeDeviceF) = delete;
+
+    TapeDeviceF& operator=(TapeDeviceF &&tapeDeviceF) noexcept;
 
     bool rewindLeft(int64_t offset) noexcept override;
     bool rewindRight(int64_t offset) noexcept override;
@@ -28,6 +38,10 @@ public:
     void setRealLatency(bool realLatency) noexcept override;
     bool atEnd() noexcept override;
     bool atStart() noexcept override;
+    uint32_t getReadLatency() noexcept override;
+    uint32_t getWriteLatency() noexcept override;
+    uint32_t getRewindLatency() noexcept override;
+
 private:
     void goToCurrPos();
     //milliseconds
@@ -38,12 +52,9 @@ private:
     uint64_t m_length;
     //current position of tape
     int64_t m_curPos = 0;
-    //todo удалитть curr elem
-    uint64_t m_currElem = 0;
     // defines to emulate tape latency
     bool m_realLatency = false;
     //in this case easier to use file
-    std::FILE *m_tape;
-
+    std::FILE *m_tape = nullptr;
 };
 #endif //YADRO_TEST_TASK_TAPEDEVICEFILE_H
