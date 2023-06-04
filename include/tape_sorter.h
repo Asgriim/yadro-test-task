@@ -26,12 +26,12 @@ public:
     int64_t getByteMemoryLimit();
     int16_t getTempTapeLimit();
 
-    void setRealLAtency(bool realLatency);
+    void setEmulateLatency(bool emulate);
     void setByteMemoryLimit(int64_t limit);
     void setTempTapeLimit(int64_t limit);
 private:
     TempTape mergeTempTapes(TempTape left, TempTape right);
-    bool m_realLatency = false;
+    bool m_emulateLatency = false;
     //16 MB by default
     int64_t m_byteMemoryLimit = 16777216;
     int16_t m_tempTapeLimit = 256;

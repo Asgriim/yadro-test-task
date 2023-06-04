@@ -34,7 +34,7 @@ m_writeLatency = tapeDeviceF.m_writeLatency;
 m_curPos = tapeDeviceF.m_curPos;
 m_length = tapeDeviceF.m_length;
 m_rewindLatency = tapeDeviceF.m_rewindLatency;
-m_realLatency = tapeDeviceF.m_realLatency;
+    m_emulateLatency = tapeDeviceF.m_emulateLatency;
 }
 
 
@@ -56,7 +56,7 @@ TapeDeviceF& TapeDeviceF::operator=(TapeDeviceF &&tapeDeviceF) noexcept
     m_curPos = tapeDeviceF.m_curPos;
     m_length = tapeDeviceF.m_length;
     m_rewindLatency = tapeDeviceF.m_rewindLatency;
-    m_realLatency = tapeDeviceF.m_realLatency;
+    m_emulateLatency = tapeDeviceF.m_emulateLatency;
     return *this;
 }
 
@@ -81,7 +81,7 @@ bool TapeDeviceF::rewindLeft(int64_t offset) noexcept
     if (!std::fseek(m_tape, -tmpOff, SEEK_CUR))
     {
         m_curPos -= tmpOff;
-        if (m_realLatency)
+        if (m_emulateLatency)
         {
             std::this_thread::sleep_for(std::chrono::microseconds(m_rewindLatency * offset));
         }
@@ -100,7 +100,7 @@ bool TapeDeviceF::goNext() noexcept
     if (!std::fseek(m_tape, elementSize, SEEK_CUR))
     {
         m_curPos += elementSize;
-        if (m_realLatency)
+        if (m_emulateLatency)
         {
             std::this_thread::sleep_for(std::chrono::microseconds(m_rewindLatency));
         }
@@ -120,7 +120,7 @@ bool TapeDeviceF::rewindRight(int64_t offset) noexcept
     if (!std::fseek(m_tape, tmpOff, SEEK_CUR))
     {
         m_curPos += tmpOff;
-        if(m_realLatency)
+        if(m_emulateLatency)
         {
             std::this_thread::sleep_for(std::chrono::microseconds(m_rewindLatency * offset));
         }
@@ -137,7 +137,7 @@ void TapeDeviceF::rewindToStart() noexcept
         return;
     }
     std::rewind(m_tape);
-    if(m_realLatency)
+    if(m_emulateLatency)
     {
         std::this_thread::sleep_for(std::chrono::microseconds(m_rewindLatency * m_curPos));
     }
@@ -152,7 +152,7 @@ void TapeDeviceF::rewindToEnd() noexcept
     }
     fseek(m_tape,0,SEEK_END);
     m_curPos = ftell(m_tape);
-    if (m_realLatency)
+    if (m_emulateLatency)
     {
         std::this_thread::sleep_for(std::chrono::microseconds(m_rewindLatency * (m_length - m_curPos)));
     }
@@ -166,7 +166,7 @@ bool TapeDeviceF::goPrev() noexcept
     }
     if(!std::fseek(m_tape, -elementSize, SEEK_CUR))
     {
-        if (m_realLatency)
+        if (m_emulateLatency)
         {
             std::this_thread::sleep_for(std::chrono::microseconds(m_rewindLatency));
         }
@@ -186,7 +186,7 @@ bool TapeDeviceF::write(int32_t elem) noexcept
     if(std::fwrite(&elem, elementSize, 1, m_tape) == 1)
     {
         std::fseek(m_tape,-elementSize, SEEK_CUR);
-        if (m_realLatency)
+        if (m_emulateLatency)
         {
             std::this_thread::sleep_for(std::chrono::microseconds(m_writeLatency));
         }
@@ -205,7 +205,7 @@ bool TapeDeviceF::read(int32_t &elem) noexcept
     if(std::fread(&elem, elementSize, 1, m_tape) == 1)
     {
         std::fseek(m_tape,-elementSize, SEEK_CUR);
-        if (m_realLatency)
+        if (m_emulateLatency)
         {
             std::this_thread::sleep_for(std::chrono::microseconds(m_readLatency));
         }
@@ -222,7 +222,7 @@ uint64_t TapeDeviceF::getLen() noexcept
 
 void TapeDeviceF::setRealLatency(bool realLatency) noexcept
 {
-    m_realLatency = realLatency;
+    m_emulateLatency = realLatency;
 }
 bool TapeDeviceF::atEnd() noexcept
 {

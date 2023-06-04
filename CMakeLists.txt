@@ -4,7 +4,8 @@ project(yadro_test_task)
 
 set(CMAKE_CXX_STANDARD 17)
 
-SET(EXEC_NAME tape_sorter)
+set(EXEC_NAME tape_sorter)
+
 
 include_directories(include)
 

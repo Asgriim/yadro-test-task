@@ -1,0 +1,7 @@
+read_latency=123
+write_latency=45
+rewind_latency=755
+memory_limit=256
+tmp_tape_limit=256
+emulate_latency=0
+text_mode=1

@@ -53,7 +53,7 @@ private:
     //current position of tape
     int64_t m_curPos = 0;
     // defines to emulate tape latency
-    bool m_realLatency = false;
+    bool m_emulateLatency = false;
     //in this case easier to use file
     std::FILE *m_tape = nullptr;
 };

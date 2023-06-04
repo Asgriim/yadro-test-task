@@ -51,8 +51,8 @@ struct TempTape
 bool TapeSorter::sortTapes(ITapeDevice &inTape, ITapeDevice &outTape)
 {
     int32_t inElem = 0;
-    inTape.setRealLatency(m_realLatency);
-    outTape.setRealLatency(m_realLatency);
+    inTape.setRealLatency(m_emulateLatency);
+    outTape.setRealLatency(m_emulateLatency);
     int64_t elemCap = m_byteMemoryLimit / sizeof(inElem);
     uint32_t rLate, rewLate, wLate;
     rLate = inTape.getReadLatency();
@@ -89,7 +89,7 @@ bool TapeSorter::sortTapes(ITapeDevice &inTape, ITapeDevice &outTape)
                                                       rewLate,
                                                       sz * sizeof(inElem));
                 tmpTape.tapeDevice = tmpDev;
-                tmpDev->setRealLatency(m_realLatency);
+                tmpDev->setRealLatency(m_emulateLatency);
                 //decending because we stop pointer in the und of tape
                 tmpTape.sortOrder = SortOrder::DESCENDING;
                 for (auto a : v)
@@ -249,7 +249,7 @@ TempTape TapeSorter::mergeTempTapes(TempTape left, TempTape right)
                                           left.tapeDevice->getWriteLatency(),
                                           left.tapeDevice->getRewindLatency(),
                                           sz * sizeof(int32_t));
-    tmpDev->setRealLatency(m_realLatency);
+    tmpDev->setRealLatency(m_emulateLatency);
     out.tapeDevice = tmpDev;
     bool leftEnded;
     if (left.sortOrder != right.sortOrder)
@@ -382,7 +382,7 @@ TempTape TapeSorter::mergeTempTapes(TempTape left, TempTape right)
 
 bool TapeSorter::isRealLatency()
 {
-    return m_realLatency;
+    return m_emulateLatency;
 }
 
 int64_t TapeSorter::getByteMemoryLimit()
@@ -400,9 +400,9 @@ void TapeSorter::setByteMemoryLimit(int64_t limit)
     m_byteMemoryLimit = limit;
 }
 
-void TapeSorter::setRealLAtency(bool realLatency)
+void TapeSorter::setEmulateLatency(bool emulate)
 {
-    m_realLatency = realLatency;
+    m_emulateLatency = emulate;
 }
 
 void TapeSorter::setTempTapeLimit(int64_t limit)
