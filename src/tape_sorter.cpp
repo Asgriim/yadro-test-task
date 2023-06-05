@@ -103,6 +103,7 @@ bool TapeSorter::sortTapes(ITapeDevice &inTape, ITapeDevice &outTape)
                 }
                 fileIndex++;
                 tmpQueue.push(tmpTape);
+                v.clear();
             }
 
         } else

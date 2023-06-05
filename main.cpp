@@ -4,12 +4,10 @@
 #include "tape_sorter.h"
 #include <filesystem>
 #include "config_reader.h"
-constexpr char* confFile = "../config";
+constexpr char* confFile = "./config";
 
 int main(int argc, char *argv[])
 {
-
-
     //
     /// initialization
     //
@@ -59,6 +57,10 @@ int main(int argc, char *argv[])
         }
     }
 
+    if (tmpTapeLimit < 3)
+    {
+        tmpTapeLimit = 3;
+    }
     bool emulateLatency = false;
     value = configReader.getValue("emulate_latency");
     if (!value.empty())

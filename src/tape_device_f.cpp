@@ -70,7 +70,6 @@ TapeDeviceF::~TapeDeviceF()
 
 }
 
-//todo обавить слип потока на задержках
 bool TapeDeviceF::rewindLeft(int64_t offset) noexcept
 {
     if (m_curPos == 0 || m_tape == nullptr)
